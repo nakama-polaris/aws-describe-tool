@@ -1,0 +1,6 @@
+[
+    {
+        "ParameterKey": "Cicd0001DescribeStackResourcesFunctionKey",
+        "ParameterValue": "functions/describe-stack-resources-function.zip"
+    }
+]

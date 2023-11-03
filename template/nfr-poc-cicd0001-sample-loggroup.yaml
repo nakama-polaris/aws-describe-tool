@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: |-
+  Sample Log Group
+
+Resources:
+  CicdSampleLoggroup:
+    DeletionPolicy: "Delete"
+    UpdateReplacePolicy: "Delete"
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      # DataProtectionPolicy: Json
+      # KmsKeyId: String
+      LogGroupName: "nfr-poc-cicd-sample-loggroup"
+      RetentionInDays: 7
+      Tags:
+        - Key: "Product"
+          Value: "nfr"
+        - Key: "Environment"
+          Value: "poc"
+        - Key: "Purpose"
+          Value: "cicd"

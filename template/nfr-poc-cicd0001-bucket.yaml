@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: |-
+  cicd0001
+  S3 bucket for function resource and result files
+
+Resources:
+  ## describeデータとFunctionCodeを格納するためのS3バケット
+  Cicd0001Bucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      # AccelerateConfiguration: 
+      #   AccelerateConfiguration
+      # AccessControl: String
+      # AnalyticsConfigurations: 
+      #   - AnalyticsConfiguration
+      # BucketEncryption: 
+      #   BucketEncryption
+      ## [Replacement]
+      BucketName: !Sub "nfr-poc-cicd0001-bucket--${AWS::AccountId}"
+      # CorsConfiguration: 
+      #   CorsConfiguration
+      # InventoryConfigurations: 
+      #   - InventoryConfiguration
+      # LifecycleConfiguration: 
+      #   LifecycleConfiguration
+      # LoggingConfiguration: 
+      #   LoggingConfiguration
+      # MetricsConfigurations: 
+      #   - MetricsConfiguration
+      # NotificationConfiguration: 
+      #   NotificationConfiguration
+      # ObjectLockConfiguration: 
+      #   ObjectLockConfiguration
+      ## [Replacement]
+      ObjectLockEnabled: false
+      # ObjectLockRule: 
+      #   ObjectLockRule
+      OwnershipControls: 
+        Rules:
+          - ObjectOwnership: "BucketOwnerEnforced"
+      PublicAccessBlockConfiguration: 
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # ReplicationConfiguration: 
+      #   ReplicationConfiguration
+      Tags: 
+        - Key: "Product"
+          Value: "nfr"
+        - Key: "Environment"
+          Value: "poc"
+        - Key: "Purpose"
+          Value: "cicd0001"
+      VersioningConfiguration: 
+        Status: "Suspended"
+      # WebsiteConfiguration: 
+      #   WebsiteConfiguration
+
+Outputs:
+  Name:
+    Description: |-
+      S3 bucket name for function resource and result files
+    Value: !Ref "Cicd0001Bucket"
+    Export:
+      Name: "nfr-poc-cicd0001-bucket-name"

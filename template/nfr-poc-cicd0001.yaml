@@ -1,0 +1,183 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: |-
+  cicd0001
+  describe-stack-resources
+
+Parameters:
+  Cicd0001DescribeStackResourcesFunctionKey:
+    Type: String
+    Description: |-
+      S3 key for describe-stack-resources function
+    Default: "functions/describe-stack-resources-function.zip"
+
+Resources:
+  ## CloudFormationの更新をLambdaに伝えるEventBridge
+  Cicd0001CatchStackEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Description: "CloudFormation Resource Status Change"
+      EventBusName: "default"
+      EventPattern:
+        source: 
+          - "aws.cloudformation"
+        detail-type: 
+          - "CloudFormation Resource Status Change"
+        detail:
+          status-details:
+            status:
+              - "CREATE_COMPLETE"
+              - "UPDATE_COMPLETE"
+              - "UPDATE_ROLLBACK_COMPLETE"
+      ## [Replacement]
+      Name: "nfr-poc-cicd0001-catch-stack-event-rule"
+      # RoleArn: String
+      # ScheduleExpression: String
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt "Cicd0001DescribeStackResourcesFunction.Arn"
+          # BatchParameters: 
+          #   BatchParameters
+          # DeadLetterConfig: 
+          #   DeadLetterConfig
+          # EcsParameters: 
+          #   EcsParameters
+          # HttpParameters: 
+          #   HttpParameters
+          Id: "nfr-poc-cicd0001-describe-stack-resources-function"
+          # Input: String
+          # InputPath: String
+          # InputTransformer: 
+          #   InputTransformer
+          # KinesisParameters: 
+          #   KinesisParameters
+          # RedshiftDataParameters: 
+          #   RedshiftDataParameters
+          RetryPolicy: 
+            MaximumEventAgeInSeconds: 86400
+            MaximumRetryAttempts: 185
+          # RoleArn: String
+          # RunCommandParameters: 
+          #   RunCommandParameters
+          # SageMakerPipelineParameters: 
+          #   SageMakerPipelineParameters
+          # SqsParameters: 
+          #   SqsParameters
+
+  ## Lambdaにアタッチするロール
+  Cicd0001DescribeStackResourcesFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Description: |-
+        Allow Lambda to access CloudFormation and S3
+      ManagedPolicyArns: 
+        ## ログ書き込みの許可
+        - "arn:aws:iam::aws:policy/CloudWatchFullAccessV2"
+        ## S3への書き込みの許可
+        - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+        ## CloudFormationへの読み取りの許可
+        - "arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess"
+      # MaxSessionDuration: Integer
+      ## [Replacement]
+      Path: "/"
+      # PermissionsBoundary: String
+      ## カスタムポリシーのアタッチにはAWS::IAM::RolePolicyを使う
+      # Policies: 
+      #   - Policy
+      ## [Replacement]
+      RoleName: !Sub "nfr-poc-cicd0001-lambda-role--${AWS::Region}"
+      Tags: 
+        - Key: "Product"
+          Value: "nfr"
+        - Key: "Environment"
+          Value: "poc"
+        - Key: "Purpose"
+          Value: "cicd0001"
+
+  ## スタック名を受け取ってdescribeの内容をS3に格納するLambda
+  Cicd0001DescribeStackResourcesFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Architectures: 
+        - "arm64"
+      Code: 
+        # ImageUri: String
+        S3Bucket: 
+          Fn::ImportValue: "nfr-poc-cicd0001-bucket-name"
+        S3Key: !Ref "Cicd0001DescribeStackResourcesFunctionKey"
+        # S3ObjectVersion: String
+        # ZipFile: String
+      # CodeSigningConfigArn: String
+      # DeadLetterConfig: 
+      #   DeadLetterConfig
+      Description: |-
+        describe stack resources and put described data to S3
+      Environment: 
+        Variables:
+          ENV: "poc"
+      EphemeralStorage: 
+        Size: 512
+      # FileSystemConfigs: 
+      #   - FileSystemConfig
+      ## [Replacement]
+      FunctionName: "nfr-poc-cicd0001-describe-stack-resources-function"
+      Handler: "lambda_function.lambda_handler"
+      # ImageConfig: 
+      #   ImageConfig
+      # KmsKeyArn: String
+      # Layers: 
+      #   - String
+      MemorySize: 128
+      PackageType: "Zip"
+      # Policy: Json
+      # ReservedConcurrentExecutions: Integer
+      Role: !GetAtt "Cicd0001DescribeStackResourcesFunctionRole.Arn"
+      Runtime: "python3.11"
+      RuntimeManagementConfig: 
+        # RuntimeVersionArn: String
+        UpdateRuntimeOn: "Auto"
+      # SnapStart: 
+      #   SnapStart
+      Tags: 
+        - Key: "Product"
+          Value: "nfr"
+        - Key: "Environment"
+          Value: "poc"
+        - Key: "Purpose"
+          Value: "cicd0001"
+      Timeout: 30
+      # TracingConfig: 
+      #   TracingConfig
+      # VpcConfig: 
+      #   VpcConfig
+
+  ## LambdaがEventBridgeから呼び出されるためのパーミッション
+  ## Replacementによるリスクが低いため、コメントアウトしたうえでの作成を許容する
+  Cicd0001DescribeStackResourcesFunctionPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      ## [Replacement]
+      Action: "lambda:InvokeFunction"
+      ## [Replacement] Alexaのための設定なのでReplacementだが設定しない
+      # EventSourceToken: String
+      ## [Replacement]
+      FunctionName: !GetAtt "Cicd0001DescribeStackResourcesFunction.Arn"
+      ## [Replacement]
+      # FunctionUrlAuthType: "NONE"
+      ## [Replacement]
+      Principal: "events.amazonaws.com"
+      ## [Replacement]
+      # PrincipalOrgID: String
+      ## [Replacement]
+      # SourceAccount: String
+      ## [Replacement]
+      SourceArn: !GetAtt "Cicd0001CatchStackEventRule.Arn"
