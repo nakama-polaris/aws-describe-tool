@@ -3,7 +3,6 @@
         "ms-python.python",
         "mhutchie.git-graph",
         "ms-vscode-remote.vscode-remote-extensionpack",
-        "github.copilot",
         "donjayamanne.python-extension-pack",
         "oderwat.indent-rainbow",
         "pkief.material-icon-theme",
@@ -17,6 +16,8 @@
         "amazonwebservices.aws-toolkit-vscode",
         "hediet.vscode-drawio",
         "yzhang.markdown-all-in-one",
-        "shd101wyy.markdown-preview-enhanced"
+        "shd101wyy.markdown-preview-enhanced",
+        "codezombiech.gitignore",
+        "github.copilot"
     ]
 }

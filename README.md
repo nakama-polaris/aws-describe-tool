@@ -40,3 +40,7 @@ pip install cfn-lint
 vscode ➜ /workspace (feature/setup) $ cfn-lint --version
 cfn-lint 0.83.1
 ```
+
+#### GitHub Copilot
+
+省略
