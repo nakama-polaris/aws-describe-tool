@@ -86,11 +86,17 @@ pip install --upgrade pip
 
 #### cfn-lint
 
-```python
+```bash
 pip install cfn-lint
 
 vscode ➜ /workspace (feature/setup) $ cfn-lint --version
 cfn-lint 0.83.1
+```
+
+#### pytest
+
+```bash
+pip install pytest
 ```
 
 #### GitHub Copilot

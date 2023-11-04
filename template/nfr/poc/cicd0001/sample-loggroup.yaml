@@ -3,14 +3,14 @@ Description: |-
   Sample Log Group
 
 Resources:
-  CicdSampleLoggroup:
+  Cicd0001SampleLoggroup:
     DeletionPolicy: "Delete"
     UpdateReplacePolicy: "Delete"
     Type: "AWS::Logs::LogGroup"
     Properties:
       # DataProtectionPolicy: Json
       # KmsKeyId: String
-      LogGroupName: "nfr-poc-cicd-sample-loggroup"
+      LogGroupName: "nfr-poc-cicd0001-sample-loggroup"
       RetentionInDays: 7
       Tags:
         - Key: "Product"
